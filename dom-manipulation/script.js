@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     populateCategories();
     filterQuotes();
     // Notify user of the update
-    displayNotification("Data synced with server. Server data takes precedence in case of conflicts.");
+    alert("Quotes synced with server!");
   }
 
   function startPeriodicSync() {
