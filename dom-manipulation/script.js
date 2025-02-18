@@ -15,25 +15,38 @@ document.addEventListener("DOMContentLoaded", () => {
   function createAddQuoteForm() {
     const formContainer = document.getElementById("form-container");
 
-    const form = `
-      <form id="quote-form">
-        <input type="text" id="quote-text" placeholder="Enter quote" required>
-        <input type="text" id="quote-category" placeholder="Enter category" required>
-        <button type="submit">Add Quote</button>
-      </form>
-    `;
-    formContainer.innerHTML = form;
+    const form = document.createElement("form");
+    form.id = "quote-form";
 
-    document.getElementById("quote-form").addEventListener("submit", (e) => {
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.id = "quote-text";
+    textInput.placeholder = "Enter quote";
+    textInput.required = true;
+    form.appendChild(textInput);
+
+    const categoryInput = document.createElement("input");
+    categoryInput.type = "text";
+    categoryInput.id = "quote-category";
+    categoryInput.placeholder = "Enter category";
+    categoryInput.required = true;
+    form.appendChild(categoryInput);
+
+    const addButton = document.createElement("button");
+    addButton.type = "submit";
+    addButton.textContent = "Add Quote";
+    form.appendChild(addButton);
+
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const textInput = document.getElementById("quote-text");
-      const categoryInput = document.getElementById("quote-category");
       const newQuote = { text: textInput.value, category: categoryInput.value };
       quotes.push(newQuote);
       textInput.value = "";
       categoryInput.value = "";
       showRandomQuote();
     });
+
+    formContainer.appendChild(form);
   }
 
   createAddQuoteForm();
