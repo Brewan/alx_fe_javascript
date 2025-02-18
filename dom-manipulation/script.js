@@ -104,9 +104,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function syncWithServer() {
-    fetch(apiUrl)
+  function fetchQuotesFromServer() {
+    return fetch(apiUrl)
       .then(response => response.json())
+      .then(serverQuotes => serverQuotes.map(post => ({ text: post.title, category: "Server" })))
+      .catch(error => console.error("Error fetching quotes from server:", error));
+  }
+
+  function syncWithServer() {
+    fetchQuotesFromServer()
       .then(serverQuotes => {
         // Simple conflict resolution: Server data takes precedence
         quotes = serverQuotes;
@@ -115,8 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filterQuotes();
         // Notify user of the update
         alert("Data synced with server. Server data takes precedence in case of conflicts.");
-      })
-      .catch(error => console.error("Error syncing with server:", error));
+      });
   }
 
   function startPeriodicSync() {
