@@ -92,36 +92,38 @@ document.addEventListener("DOMContentLoaded", () => {
     importInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const importedQuotes = JSON.parse(event.target.result);
         quotes.push(...importedQuotes);
         localStorage.setItem("quotes", JSON.stringify(quotes));
         populateCategories();  // Update categories
         filterQuotes();
-        syncWithServer();  // Sync data with the server after importing quotes
+        await syncWithServer();  // Sync data with the server after importing quotes
       };
       reader.readAsText(file);
     });
   }
 
-  function fetchQuotesFromServer() {
-    return fetch(apiUrl)
-      .then(response => response.json())
-      .then(serverQuotes => serverQuotes.map(post => ({ text: post.title, category: "Server" })))
-      .catch(error => console.error("Error fetching quotes from server:", error));
+  async function fetchQuotesFromServer() {
+    try {
+      const response = await fetch(apiUrl);
+      const serverQuotes = await response.json();
+      return serverQuotes.map(post => ({ text: post.title, category: "Server" }));
+    } catch (error) {
+      console.error("Error fetching quotes from server:", error);
+      return [];
+    }
   }
 
-  function syncWithServer() {
-    fetchQuotesFromServer()
-      .then(serverQuotes => {
-        // Simple conflict resolution: Server data takes precedence
-        quotes = serverQuotes;
-        localStorage.setItem("quotes", JSON.stringify(quotes));
-        populateCategories();
-        filterQuotes();
-        // Notify user of the update
-        alert("Data synced with server. Server data takes precedence in case of conflicts.");
-      });
+  async function syncWithServer() {
+    const serverQuotes = await fetchQuotesFromServer();
+    // Simple conflict resolution: Server data takes precedence
+    quotes = serverQuotes;
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+    populateCategories();
+    filterQuotes();
+    // Notify user of the update
+    alert("Data synced with server. Server data takes precedence in case of conflicts.");
   }
 
   function startPeriodicSync() {
