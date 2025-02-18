@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const quotes = JSON.parse(localStorage.getItem("quotes")) || [
+  const apiUrl = "https://jsonplaceholder.typicode.com/posts"; // Placeholder API for simulation
+
+  let quotes = JSON.parse(localStorage.getItem("quotes")) || [
     { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Motivational" },
     { text: "In the end, we will remember not the words of our enemies, but the silence of our friends.", category: "Inspirational" },
     // More quotes can be added here
@@ -65,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       categoryInput.value = "";
       populateCategories();  // Update categories
       filterQuotes();
+      syncWithServer();  // Sync data with the server after adding a quote
     });
 
     formContainer.appendChild(form);
@@ -95,9 +98,29 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("quotes", JSON.stringify(quotes));
         populateCategories();  // Update categories
         filterQuotes();
+        syncWithServer();  // Sync data with the server after importing quotes
       };
       reader.readAsText(file);
     });
+  }
+
+  function syncWithServer() {
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(serverQuotes => {
+        // Simple conflict resolution: Server data takes precedence
+        quotes = serverQuotes;
+        localStorage.setItem("quotes", JSON.stringify(quotes));
+        populateCategories();
+        filterQuotes();
+        // Notify user of the update
+        alert("Data synced with server. Server data takes precedence in case of conflicts.");
+      })
+      .catch(error => console.error("Error syncing with server:", error));
+  }
+
+  function startPeriodicSync() {
+    setInterval(syncWithServer, 60000); // Sync with server every 60 seconds
   }
 
   populateCategories();
@@ -105,4 +128,5 @@ document.addEventListener("DOMContentLoaded", () => {
   createExportButton();
   createImportButton();
   showRandomQuote();
+  startPeriodicSync();
 });
