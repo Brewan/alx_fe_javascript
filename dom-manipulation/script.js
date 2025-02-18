@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     addButton.textContent = "Add Quote";
     form.appendChild(addButton);
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const newQuote = { text: textInput.value, category: categoryInput.value };
       quotes.push(newQuote);
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       categoryInput.value = "";
       populateCategories();  // Update categories
       filterQuotes();
-      syncWithServer();  // Sync data with the server after adding a quote
+      await syncWithServer();  // Sync data with the server after adding a quote
     });
 
     formContainer.appendChild(form);
@@ -124,6 +124,20 @@ document.addEventListener("DOMContentLoaded", () => {
     filterQuotes();
     // Notify user of the update
     alert("Data synced with server. Server data takes precedence in case of conflicts.");
+  }
+
+  async function postQuoteToServer(quote) {
+    try {
+      await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(quote)
+      });
+    } catch (error) {
+      console.error("Error posting quote to server:", error);
+    }
   }
 
   function startPeriodicSync() {
