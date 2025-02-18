@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // More quotes can be added here
   ];
 
-  function populateCategoryFilter() {
+  function populateCategories() {
     const categoryFilter = document.getElementById("categoryFilter");
     const categories = ["all", ...new Set(quotes.map(quote => quote.category))];
     categoryFilter.innerHTML = categories.map(category => `<option value="${category}">${category}</option>`).join("");
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("quotes", JSON.stringify(quotes));
       textInput.value = "";
       categoryInput.value = "";
-      populateCategoryFilter();  // Update categories
+      populateCategories();  // Update categories
       filterQuotes();
     });
 
@@ -89,14 +89,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const importedQuotes = JSON.parse(event.target.result);
         quotes.push(...importedQuotes);
         localStorage.setItem("quotes", JSON.stringify(quotes));
-        populateCategoryFilter();  // Update categories
+        populateCategories();  // Update categories
         filterQuotes();
       };
       reader.readAsText(file);
     });
   }
 
-  populateCategoryFilter();
+  populateCategories();
   createAddQuoteForm();
   createExportButton();
   createImportButton();
