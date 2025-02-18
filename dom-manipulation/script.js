@@ -67,7 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
       categoryInput.value = "";
       populateCategories();  // Update categories
       filterQuotes();
-      await syncWithServer();  // Sync data with the server after adding a quote
+      await postQuoteToServer(newQuote);  // Sync new quote with the server
+      await syncQuotes();  // Sync quotes with the server
     });
 
     formContainer.appendChild(form);
@@ -98,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("quotes", JSON.stringify(quotes));
         populateCategories();  // Update categories
         filterQuotes();
-        await syncWithServer();  // Sync data with the server after importing quotes
+        await syncQuotes();  // Sync quotes with the server after importing
       };
       reader.readAsText(file);
     });
@@ -115,17 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  async function syncWithServer() {
-    const serverQuotes = await fetchQuotesFromServer();
-    // Simple conflict resolution: Server data takes precedence
-    quotes = serverQuotes;
-    localStorage.setItem("quotes", JSON.stringify(quotes));
-    populateCategories();
-    filterQuotes();
-    // Notify user of the update
-    alert("Data synced with server. Server data takes precedence in case of conflicts.");
-  }
-
   async function postQuoteToServer(quote) {
     try {
       await fetch(apiUrl, {
@@ -140,8 +130,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  async function syncQuotes() {
+    const serverQuotes = await fetchQuotesFromServer();
+    // Simple conflict resolution: Server data takes precedence
+    quotes = serverQuotes;
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+    populateCategories();
+    filterQuotes();
+    // Notify user of the update
+    displayNotification("Data synced with server. Server data takes precedence in case of conflicts.");
+  }
+
   function startPeriodicSync() {
-    setInterval(syncWithServer, 60000); // Sync with server every 60 seconds
+    setInterval(syncQuotes, 60000); // Sync with server every 60 seconds
+  }
+
+  function displayNotification(message) {
+    const notificationContainer = document.createElement("div");
+    notificationContainer.className = "notification";
+    notificationContainer.textContent = message;
+    document.body.appendChild(notificationContainer);
+    setTimeout(() => {
+      notificationContainer.remove();
+    }, 5000);
   }
 
   populateCategories();
