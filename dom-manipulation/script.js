@@ -17,6 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedCategory = document.getElementById("categoryFilter").value;
     localStorage.setItem("lastSelectedCategory", selectedCategory);
     const filteredQuotes = selectedCategory === "all" ? quotes : quotes.filter(quote => quote.category === selectedCategory);
+    quoteDisplay(filteredQuotes);
+  }
+
+  function quoteDisplay(filteredQuotes) {
     const quoteContainer = document.getElementById("quote-container");
     const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
     const randomQuote = filteredQuotes[randomIndex];
