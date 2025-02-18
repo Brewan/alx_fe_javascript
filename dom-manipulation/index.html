@@ -18,7 +18,8 @@
     }
     #form-container,
     #import-container,
-    #export-container {
+    #export-container,
+    #filter-container {
       margin-bottom: 20px;
     }
     form input {
@@ -28,6 +29,12 @@
 </head>
 <body>
   <div id="quote-container"></div>
+  <div id="filter-container">
+    <select id="categoryFilter" onchange="filterQuotes()">
+      <option value="all">All Categories</option>
+      <!-- Dynamically populated categories -->
+    </select>
+  </div>
   <div id="form-container"></div>
   <div id="export-container">
     <button id="export-button">Export Quotes</button>
